@@ -1,27 +1,65 @@
 # CodeAssistProxy
 
-💧 A project built with the Vapor web framework.
+💧 A code assistant proxy service built with the Vapor web framework.
+
+## Project Overview
+
+CodeAssistProxy is an intelligent proxy server whose main function is to forward requests in the OpenAI API format to the Google Gemini API. It also supports hack operations for Xcode's Code Assistant, enabling prompt injection and modification.
+
+## Core Features
+
+- **API Proxy Forwarding**: Converts and forwards API requests in the OpenAI format to the Google Gemini API
+- **Model Information Retrieval**: Provides information about available AI models
+- **Chat Completion Service**: Supports multi-turn conversations and code generation
+- **Header Forwarding**: Preserves the integrity of the original request, ensuring correct transmission of authentication and content type
+
+## API Endpoints
+
+### Core Proxy API
+
+- **GET `/v1/models`**
+  - Function: Retrieve the list of available AI models
+  - Description: Proxies the request to the Gemini API and returns supported model information
+
+- **POST `/v1/chat/completions`**
+  - Function: Chat completion endpoint, supporting code generation and Q&A
+  - Description: Receives chat requests in the OpenAI format and forwards them to the Gemini API for processing
+
+## Workflow
+
+```
+Client Request →  CodeAssistProxy        →       Google Gemini API   →   Response Returned to Client
+    ↓                ↓                                  ↓                          ↑
+OpenAI Format   Format Conversion & Forwarding     AI Processing         Return in Original Format
+```
 
 ## Getting Started
 
-To build the project using the Swift Package Manager, run the following command in the terminal from the root of the project:
+### Requirements
+- Swift 5.5+
+- Vapor 4.0+
+
+### Build the Project
+Use Swift Package Manager to build the project:
 ```bash
 swift build
 ```
 
-To run the project and start the server, use the following command:
+### Run the Server
+Start the development server:
 ```bash
 swift run
 ```
 
-To execute tests, use the following command:
-```bash
-swift test
-```
+## Configuration
 
-### See more
+The project uses the `Constants.swift` file to manage API configuration:
+- Gemini API Key
+- API Base URL
+- Endpoint path configuration
 
-- [Vapor Website](https://vapor.codes)
-- [Vapor Documentation](https://docs.vapor.codes)
-- [Vapor GitHub](https://github.com/vapor)
-- [Vapor Community](https://github.com/vapor-community)
+## Tech Stack
+
+- **Backend Framework**: Vapor 4.x
+- **Language**: Swift
+- **HTTP Client**: AsyncHTTPClient
