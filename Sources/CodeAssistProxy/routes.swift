@@ -31,16 +31,29 @@ func routes(_ app: Application) throws {
 
     app.post("v1", "chat", "completions") { req async throws -> Response in
         let geminiUrl = APIConstants.getChatCompletionsURL()
+
+        // get the original request body
+        guard let originalBody = req.body.data else {
+            throw Abort(.badRequest, reason: "Missing request body")
+        }
+
+        // replace the string if target pattern exists
+        let bodyString = String(buffer: originalBody)
+        let targetPattern = "Only include documentation comments. No other Swift code."
+        let replacement = "Prefer using inline `//` comments to explain each line of code directly within the code block."
+        let modifiedBody: ByteBuffer
+        if bodyString.contains(targetPattern) {
+            let modifiedString = bodyString.replacingOccurrences(of: targetPattern, with: replacement)
+            modifiedBody = ByteBuffer(string: modifiedString)
+        } else {
+            modifiedBody = originalBody
+        }
         
         // transfer request to gemini api, and keep the original header
         let clientResponse = try await req.client.post(URI(string: geminiUrl)) { clientReq in
             clientReq.headers.add(name: "Authorization", value: APIConstants.getAuthorizationHeader())
             clientReq.headers.add(name: "Content-Type", value: "application/json")
-            
-            // forward body: type(req.body) is Request.Body, and type(clientReq.body) is clientReq.body: HTTPClient.Body
-            if let body = req.body.data {
-                clientReq.body = body
-            }
+            clientReq.body = modifiedBody
         }
         
         // create new Response object
