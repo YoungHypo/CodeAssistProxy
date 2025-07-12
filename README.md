@@ -40,6 +40,13 @@ OpenAI Format   Format Conversion & Forwarding     AI Processing         Return 
 - Vapor 4.0+
 
 ### Build the Project
+
+In Sources/CodeAssistProxy/Constants.swift, replace the value of geminiAPIKey with your own API key:
+
+```swift
+  static let geminiAPIKey = "your-own-gemini-api-key"
+```
+
 Use Swift Package Manager to build the project:
 ```bash
 swift build
