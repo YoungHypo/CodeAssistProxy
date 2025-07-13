@@ -1,25 +1,50 @@
 import Foundation
 
 struct APIConstants {
-    // TODO: vapor can't directly read env variable from .env
+    // Configuration for deployment type
+    static let useLocalModel = true // Set to true for local Gemma 3n, false for Gemini cloud
+    
+    // Gemini Cloud API configuration
     static let geminiAPIKey = ""
     static let geminiBaseURL = "https://generativelanguage.googleapis.com/v1beta"
     
-    static let modelsEndpoint = "/openai/models"
-    static let chatCompletionsEndpoint = "/openai/chat/completions"
+    // Local Gemma 3n configuration (using Ollama)
+    static let localModelBaseURL = "http://localhost:11434/v1"
+    static let localModelName = "gemma3n:e2b"
+    
+    // Endpoint paths
+    static let modelsEndpoint = "/models"
+    static let chatCompletionsEndpoint = "/chat/completions"
+    static let geminiModelsEndpoint = "/openai/models"
+    static let geminiChatCompletionsEndpoint = "/openai/chat/completions"
 }
 
-// MARK: - Helper Methods
 extension APIConstants {
     static func getModelsURL() -> String {
-        return "\(geminiBaseURL)\(modelsEndpoint)"
+        if useLocalModel {
+            return "\(localModelBaseURL)\(modelsEndpoint)"
+        } else {
+            return "\(geminiBaseURL)\(geminiModelsEndpoint)"
+        }
     }
 
     static func getChatCompletionsURL() -> String {
-        return "\(geminiBaseURL)\(chatCompletionsEndpoint)"
+        if useLocalModel {
+            return "\(localModelBaseURL)\(chatCompletionsEndpoint)"
+        } else {
+            return "\(geminiBaseURL)\(geminiChatCompletionsEndpoint)"
+        }
     }
 
     static func getAuthorizationHeader() -> String {
-        return "Bearer \(geminiAPIKey)"
+        if useLocalModel {
+            return "" // Local Ollama doesn't require authentication
+        } else {
+            return "Bearer \(geminiAPIKey)"
+        }
+    }
+    
+    static func requiresAuthentication() -> Bool {
+        return !useLocalModel
     }
 } 
